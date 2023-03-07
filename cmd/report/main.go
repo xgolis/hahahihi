@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/xuri/excelize/v2"
@@ -18,6 +19,10 @@ type App struct {
 	TsFrom  int64
 	TsTo    int64
 	Auth    string
+	ICG     int
+	Values  []float64
+	Dates   []time.Time
+	Month   int
 }
 
 type Data struct {
@@ -26,22 +31,23 @@ type Data struct {
 }
 
 type Values struct {
-	Date  string  `json:"datef"`
-	C8102 float64 `json:"ic2"`
-	C8104 float64 `json:"ic4"`
-	C8106 float64 `json:"ic6"`
-	C8107 float64 `json:"ic7"`
-	C8108 float64 `json:"ic8"`
-	C8110 float64 `json:"ic10"`
-	C8111 float64 `json:"ic11"`
-	C8113 float64 `json:"ic13"`
-	C8114 float64 `json:"ic14"`
-	C8116 float64 `json:"ic16"`
-	C8118 float64 `json:"ic18"`
-	C8120 float64 `json:"ic20"`
-	C8122 float64 `json:"ic22"`
-	C8125 float64 `json:"ic25"`
-	C8126 float64 `json:"ic26"`
+	Date string  `json:"datef"`
+	IC02 float64 `json:"ic2,omitempty"`
+	IC04 float64 `json:"ic4,omitempty"`
+	IC06 float64 `json:"ic6,omitempty"`
+	IC07 float64 `json:"ic7,omitempty"`
+	IC08 float64 `json:"ic8,omitempty"`
+	IC10 float64 `json:"ic10,omitempty"`
+	IC11 float64 `json:"ic11,omitempty"`
+	IC12 float64 `json:"ic12,omitempty"`
+	IC13 float64 `json:"ic13,omitempty"`
+	IC14 float64 `json:"ic14,omitempty"`
+	IC16 float64 `json:"ic16,omitempty"`
+	IC18 float64 `json:"ic18,omitempty"`
+	IC20 float64 `json:"ic20,omitempty"`
+	IC22 float64 `json:"ic22,omitempty"`
+	IC25 float64 `json:"ic25,omitempty"`
+	IC26 float64 `json:"ic26,omitempty"`
 }
 
 var lastDay map[int]int = map[int]int{
@@ -60,16 +66,114 @@ var lastDay map[int]int = map[int]int{
 	12: 31,
 }
 
-func (a *App) getUrl() string {
-	return fmt.Sprintf("%stsfrom=%d&tsto=%d", a.BaseURL, a.TsFrom, a.TsTo)
+var nameMonth map[int]string = map[int]string{
+	1:  "Januar",
+	2:  "Februar",
+	3:  "Marec",
+	4:  "April",
+	5:  "Maj",
+	6:  "Jun",
+	7:  "Jul",
+	8:  "August",
+	9:  "September",
+	10: "Oktober",
+	11: "November",
+	12: "December",
 }
 
-func NewApp(tsfrom, tsto int64) *App {
+var devices map[int]string = map[int]string{
+	1373: "KTLZM-demistanica",
+	1364: "RETTLH-kotolna-turbiny",
+	1355: "GOTEC-reverzna-osmoza",
+}
+
+var icgs map[int]int = map[int]int{
+	1: 1373,
+	2: 1364,
+	3: 1355,
+}
+
+var excelInfocodes map[int][]int = map[int][]int{
+	1373: {8102, 8104, 8106, 8108, 8110, 8111, 8113, 8114, 8116, 8118, 8120, 8122, 8125},
+	1364: {2102, 2104, 2106, 2108, 2110, 2112, 2114, 2116},
+	1355: {2102, 2104, 2106, 2108, 2110, 2112, 2114, 2116},
+}
+
+var alphabet = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "X", "Y", "Z"}
+
+func (a *App) getUrl() string {
+	return fmt.Sprintf("%s%d?tsfrom=%d&tsto=%d", a.BaseURL, a.ICG, a.TsFrom, a.TsTo)
+}
+
+func (a *App) fillArray(data Data) {
+
+	if a.ICG == int(icgs[1]) {
+		for _, value := range data.RealData {
+			a.Values = append(a.Values, value.IC02)
+			a.Values = append(a.Values, value.IC04)
+			a.Values = append(a.Values, value.IC06)
+			a.Values = append(a.Values, value.IC08)
+			a.Values = append(a.Values, value.IC10)
+			a.Values = append(a.Values, value.IC11)
+			a.Values = append(a.Values, value.IC13)
+			a.Values = append(a.Values, value.IC14)
+			a.Values = append(a.Values, value.IC16)
+			a.Values = append(a.Values, value.IC18)
+			a.Values = append(a.Values, value.IC20)
+			a.Values = append(a.Values, value.IC22)
+			a.Values = append(a.Values, value.IC25)
+
+			formatedDate, err := time.Parse("2006-01-02", strings.Split(value.Date, " ")[0])
+			if err != nil {
+				panic(err)
+			}
+			a.Dates = append(a.Dates, formatedDate)
+		}
+	} else if a.ICG == int(icgs[2]) {
+		for _, value := range data.RealData {
+			a.Values = append(a.Values, value.IC02)
+			a.Values = append(a.Values, value.IC04)
+			a.Values = append(a.Values, value.IC06)
+			a.Values = append(a.Values, value.IC08)
+			a.Values = append(a.Values, value.IC10)
+			a.Values = append(a.Values, value.IC12)
+			a.Values = append(a.Values, value.IC14)
+			a.Values = append(a.Values, value.IC16)
+
+			formatedDate, err := time.Parse("2006-01-02", strings.Split(value.Date, " ")[0])
+			if err != nil {
+				panic(err)
+			}
+			a.Dates = append(a.Dates, formatedDate)
+		}
+	} else if a.ICG == int(icgs[3]) {
+		for _, value := range data.RealData {
+			a.Values = append(a.Values, value.IC02)
+			a.Values = append(a.Values, value.IC04)
+			a.Values = append(a.Values, value.IC06)
+			a.Values = append(a.Values, value.IC08)
+			a.Values = append(a.Values, value.IC10)
+			a.Values = append(a.Values, value.IC12)
+			a.Values = append(a.Values, value.IC14)
+			a.Values = append(a.Values, value.IC16)
+
+			formatedDate, err := time.Parse("2006-01-02", strings.Split(value.Date, " ")[0])
+			if err != nil {
+				panic(err)
+			}
+			a.Dates = append(a.Dates, formatedDate)
+		}
+	}
+}
+
+func NewApp(tsfrom int64, tsto int64, icg int, month int) *App {
 	return &App{
-		BaseURL: "https://iot-api.aiwater.io/iot/data/samples/graph-series-daily/icg:1373?",
+		BaseURL: "https://iot-api.aiwater.io/iot/data/samples/graph-series-daily/icg:",
 		Auth:    "Basic ZnJvbnRlbmQ6RzF2ZU0zRDQrNA==",
 		TsFrom:  tsfrom,
 		TsTo:    tsto,
+		ICG:     icg,
+		Month:   month,
 	}
 }
 
@@ -82,6 +186,17 @@ func getMonth() int {
 	}
 
 	return month
+}
+
+func getICG() int {
+	var device int
+	fmt.Println("Select device [1-KTZLM: deminstanica, 2-RETTLH: kotolna turbiny, 3-GOTEC: reverzna osmoza]")
+	_, err := fmt.Scanf("%d \n", &device)
+	if err != nil {
+		log.Panicf("error while getting value: %v", err)
+	}
+
+	return icgs[device]
 }
 
 func getTimeStamp(month int) (int64, int64) {
@@ -114,7 +229,6 @@ func (a *App) getData() Data {
 		fmt.Printf("could not read response body: %s\n", err)
 		os.Exit(1)
 	}
-	// fmt.Printf("client: response body: %s\n", resBody)
 
 	var data Data
 	err = json.Unmarshal(resBody, &data)
@@ -125,55 +239,56 @@ func (a *App) getData() Data {
 	return data
 }
 
-func (a *App) writeExcel(data Data, month int) {
+func (a *App) writeExcel(data []float64) {
 	f := excelize.NewFile()
 
-	f.SetCellValue("Sheet1", "B1", "Infocodes")
-	f.SetCellValue("Sheet1", "A2", "Date")
-	f.SetCellValue("Sheet1", "B2", 8102)
-	f.SetCellValue("Sheet1", "C2", 8104)
-	f.SetCellValue("Sheet1", "D2", 8106)
-	f.SetCellValue("Sheet1", "E2", 8108)
-	f.SetCellValue("Sheet1", "F2", 8110)
-	f.SetCellValue("Sheet1", "G2", 8111)
-	f.SetCellValue("Sheet1", "H2", 8113)
-	f.SetCellValue("Sheet1", "I2", 8114)
-	f.SetCellValue("Sheet1", "J2", 8116)
-	f.SetCellValue("Sheet1", "K2", 8118)
-	f.SetCellValue("Sheet1", "L2", 8120)
-	f.SetCellValue("Sheet1", "M2", 8122)
-	f.SetCellValue("Sheet1", "N2", 8125)
-
-	// for i := 0; i < lastDay[month]; i++ {
-	for i, value := range data.RealData {
-		// value := data.RealData[i]
-		date := fmt.Sprintf("%d.%d.2023", i+1, month)
-		f.SetCellValue("Sheet1", "A"+strconv.Itoa(i+3), date)
-
-		f.SetCellValue("Sheet1", "B"+strconv.Itoa(i+3), value.C8102)
-		f.SetCellValue("Sheet1", "C"+strconv.Itoa(i+3), value.C8104)
-		f.SetCellValue("Sheet1", "D"+strconv.Itoa(i+3), value.C8106)
-		f.SetCellValue("Sheet1", "E"+strconv.Itoa(i+3), value.C8108)
-		f.SetCellValue("Sheet1", "F"+strconv.Itoa(i+3), value.C8110)
-		f.SetCellValue("Sheet1", "G"+strconv.Itoa(i+3), value.C8111)
-		f.SetCellValue("Sheet1", "H"+strconv.Itoa(i+3), value.C8113)
-		f.SetCellValue("Sheet1", "I"+strconv.Itoa(i+3), value.C8114)
-		f.SetCellValue("Sheet1", "J"+strconv.Itoa(i+3), value.C8116)
-		f.SetCellValue("Sheet1", "K"+strconv.Itoa(i+3), value.C8118)
-		f.SetCellValue("Sheet1", "L"+strconv.Itoa(i+3), value.C8120)
-		f.SetCellValue("Sheet1", "M"+strconv.Itoa(i+3), value.C8122)
-		f.SetCellValue("Sheet1", "N"+strconv.Itoa(i+3), value.C8125)
+	err := f.SetCellValue("Sheet1", "B1", "Infocodes")
+	if err != nil {
+		panic(err)
 	}
-	// f.SetCellValue("Sheet1", "A4", now.Format(time.ANSIC))
+	err = f.SetCellValue("Sheet1", "A2", "Date")
+	if err != nil {
+		panic(err)
+	}
 
-	if err := f.SaveAs("februar.xlsx"); err != nil {
+	codes := excelInfocodes[int(a.ICG)]
+
+	for i := 0; i < len(codes); i++ {
+		err = f.SetCellValue("Sheet1", alphabet[i+1]+"2", codes[i])
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	row := 2
+	for i, value := range data {
+		if i%(len(codes)) == 0 {
+			date := fmt.Sprint(a.Dates[row-2].AddDate(0, 0, 1).Format("02.01.2006"))
+			row += 1
+			err = f.SetCellValue("Sheet1", "A"+strconv.Itoa(row), date)
+			if err != nil {
+				panic(err)
+			}
+		}
+
+		err = f.SetCellValue("Sheet1", alphabet[(i+len(codes))%len(codes)+1]+strconv.Itoa(row), value)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	fileName := fmt.Sprintf("%s-%s.xlsx", devices[a.ICG], nameMonth[a.Month])
+	if err := f.SaveAs(fileName); err != nil {
 		log.Fatal(err)
 	}
 }
 
 func main() {
 	month := getMonth()
-	app := NewApp(getTimeStamp(month))
+	icg := getICG()
+	tsfrom, tsto := getTimeStamp(month)
+	app := NewApp(tsfrom, tsto, icg, month)
 	data := app.getData()
-	app.writeExcel(data, month)
+	app.fillArray(data)
+	app.writeExcel(app.Values)
 }

@@ -85,18 +85,21 @@ var devices map[int]string = map[int]string{
 	1373: "KTLZM-demistanica",
 	1364: "RETTLH-kotolna-turbiny",
 	1355: "GOTEC-reverzna-osmoza",
+	1421: "SM62+RO-B1-3",
 }
 
 var icgs map[int]int = map[int]int{
 	1: 1373,
 	2: 1364,
 	3: 1355,
+	4: 1421,
 }
 
 var excelInfocodes map[int][]int = map[int][]int{
 	1373: {8102, 8104, 8106, 8108, 8110, 8111, 8113, 8114, 8116, 8118, 8120, 8122, 8125},
 	1364: {2102, 2104, 2106, 2108, 2110, 2112, 2114, 2116},
 	1355: {2102, 2104, 2106, 2108, 2110, 2112, 2114, 2116},
+	1421: {2102, 2104, 2106, 2108, 2110, 2112, 2114, 2116},
 }
 
 var alphabet = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "X", "Y", "Z"}
@@ -163,6 +166,23 @@ func (a *App) fillArray(data Data) {
 			}
 			a.Dates = append(a.Dates, formatedDate)
 		}
+	} else if a.ICG == int(icgs[4]) {
+		for _, value := range data.RealData {
+			a.Values = append(a.Values, value.IC02)
+			a.Values = append(a.Values, value.IC04)
+			a.Values = append(a.Values, value.IC06)
+			a.Values = append(a.Values, value.IC08)
+			a.Values = append(a.Values, value.IC10)
+			a.Values = append(a.Values, value.IC12)
+			a.Values = append(a.Values, value.IC14)
+			a.Values = append(a.Values, value.IC16)
+
+			formatedDate, err := time.Parse("2006-01-02", strings.Split(value.Date, " ")[0])
+			if err != nil {
+				panic(err)
+			}
+			a.Dates = append(a.Dates, formatedDate)
+		}
 	}
 }
 
@@ -190,7 +210,7 @@ func getMonth() int {
 
 func getICG() int {
 	var device int
-	fmt.Println("Select device [1-KTZLM: deminstanica, 2-RETTLH: kotolna turbiny, 3-GOTEC: reverzna osmoza]")
+	fmt.Println("Select device [1-KTZLM: deminstanica, 2-RETTLH: kotolna turbiny, 3-GOTEC: reverzna osmoza, 4-SM62+RO-B1-3]")
 	_, err := fmt.Scanf("%d \n", &device)
 	if err != nil {
 		log.Panicf("error while getting value: %v", err)

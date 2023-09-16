@@ -23,6 +23,7 @@ type App struct {
 	Dates   []string
 	Month   int
 	Daily   bool
+	Year    int
 }
 
 type Data struct {
@@ -229,19 +230,19 @@ func NewApp(tsfrom int64, tsto int64, icg int, month int, daily bool, year int) 
 		TsTo:    tsto,
 		ICG:     icg,
 		Month:   month,
-		Year: year,
+		Year:    year,
 	}
 }
 
 func getYear() int {
-        var year int
-        fmt.Println("Insert year")
-        _, err := fmt.Scanf("%d \n", &year)
-        if err != nil {
-                log.Panicf("error while getting value: %v", err)
-        }
+	var year int
+	fmt.Println("Insert year")
+	_, err := fmt.Scanf("%d \n", &year)
+	if err != nil {
+		log.Panicf("error while getting value: %v", err)
+	}
 
-        return year
+	return year
 }
 
 func getMonth() int {

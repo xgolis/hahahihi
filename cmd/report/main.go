@@ -214,7 +214,7 @@ func (a *App) fillArray(data Data) {
 	}
 }
 
-func NewApp(tsfrom int64, tsto int64, icg int, month int, daily bool) *App {
+func NewApp(tsfrom int64, tsto int64, icg int, month int, daily bool, year int) *App {
 	var url = ""
 	if icg == 1373 || icg == 1364 || icg == 1355 || icg == 1421 || icg == 1435 {
 		url = "https://iot-api.aiwater.io/iot/data/samples/graph-series-daily/icg:"
@@ -229,7 +229,19 @@ func NewApp(tsfrom int64, tsto int64, icg int, month int, daily bool) *App {
 		TsTo:    tsto,
 		ICG:     icg,
 		Month:   month,
+		Year: year,
 	}
+}
+
+func getYear() int {
+        var year int
+        fmt.Println("Insert year")
+        _, err := fmt.Scanf("%d \n", &year)
+        if err != nil {
+                log.Panicf("error while getting value: %v", err)
+        }
+
+        return year
 }
 
 func getMonth() int {
@@ -259,9 +271,9 @@ func getICG() (int, bool) {
 	return icgs[device], daily
 }
 
-func getTimeStamp(month int) (int64, int64) {
-	tsfrom := time.Date(2023, time.Month(month), 1, 0, 0, 0, 0, time.Now().Location()).Unix()
-	tsto := time.Date(2023, time.Month(month), lastDay[month], 0, 0, 0, 0, time.Now().Location()).Unix()
+func getTimeStamp(month int, year int) (int64, int64) {
+	tsfrom := time.Date(year, time.Month(month), 1, 0, 0, 0, 0, time.Now().Location()).Unix()
+	tsto := time.Date(year, time.Month(month), lastDay[month], 0, 0, 0, 0, time.Now().Location()).Unix()
 
 	return tsfrom, tsto
 }
@@ -376,10 +388,11 @@ func (a *App) writeExcel(data []float64) {
 
 func main() {
 	// daily := true
+	year := getYear()
 	month := getMonth()
 	icg, daily := getICG()
-	tsfrom, tsto := getTimeStamp(month)
-	app := NewApp(tsfrom, tsto, icg, month, daily)
+	tsfrom, tsto := getTimeStamp(month, year)
+	app := NewApp(tsfrom, tsto, icg, month, daily, year)
 	fmt.Println(app)
 	data := app.noIdeaHowToNameThis()
 	// fmt.Println(data)

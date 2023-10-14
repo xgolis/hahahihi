@@ -41,6 +41,7 @@ type Values struct {
 	IC06 float64 `json:"ic6,omitempty"`
 	IC07 float64 `json:"ic7,omitempty"`
 	IC08 float64 `json:"ic8,omitempty"`
+	IC09 float64 `json:"ic9,omitmepty"`
 	IC10 float64 `json:"ic10,omitempty"`
 	IC11 float64 `json:"ic11,omitempty"`
 	IC12 float64 `json:"ic12,omitempty"`
@@ -50,8 +51,15 @@ type Values struct {
 	IC18 float64 `json:"ic18,omitempty"`
 	IC20 float64 `json:"ic20,omitempty"`
 	IC22 float64 `json:"ic22,omitempty"`
+	IC24 float64 `json:"ic24,omitempty"`
 	IC25 float64 `json:"ic25,omitempty"`
 	IC26 float64 `json:"ic26,omitempty"`
+	IC28 float64 `json:"ic28,omitempty"`
+	IC30 float64 `json:"ic30,omitempty"`
+	IC32 float64 `json:"ic32,omitempty"`
+	IC33 float64 `json:"ic33,omitempty"`
+	IC34 float64 `json:"ic34,omitempty"`
+	IC36 float64 `json:"ic36,omitempty"`
 }
 
 var lastDay map[int]int = map[int]int{
@@ -92,16 +100,26 @@ var devices map[int]string = map[int]string{
 	1421: "SM62+RO-B1-3",
 	1346: "VINCENTE",
 	1435: "GPV-osmoza",
+	1281: "TESGAL: RO podesta",
+	1393: "Dialyza-Levice",
+	1145: "SEMI-RO1",
+	1489: "SEMI-RO2",
+	1361: "RONA",
 }
 
 var icgs map[int]int = map[int]int{
-	1: 1373,
-	2: 1364,
-	3: 1355,
-	4: 1421,
-	5: 1373,
-	6: 1346,
-	7: 1435,
+	1:  1373,
+	2:  1364,
+	3:  1355,
+	4:  1421,
+	5:  1373,
+	6:  1346,
+	7:  1435,
+	8:  1281,
+	9:  1393,
+	10: 1145,
+	11: 1489,
+	12: 1361,
 }
 
 var excelInfocodes map[int][]int = map[int][]int{
@@ -111,6 +129,11 @@ var excelInfocodes map[int][]int = map[int][]int{
 	1421: {2102, 2104, 2106, 2108, 2110, 2112, 2114, 2116},
 	1346: {2001, 2002, 2003, 2004, 2005, 2006, 2007, 2011, 2012, 2013},
 	1435: {2102, 2104, 2106, 2108, 2110, 2112, 2114, 2116},
+	1281: {2102, 2104, 2106, 2108, 2110, 2112, 2114, 2116},
+	1393: {2102, 2104, 2106, 2108, 2110, 2112, 2114, 2116},
+	1145: {2102, 2104, 2106, 2108, 2110, 2112, 2114, 2116},
+	1489: {2102, 2104, 2106, 2108, 2110, 2112, 2114, 2116},
+	1361: {5102, 5105, 5106, 5107, 5108, 5109, 5110, 5112, 5114, 5116, 5118, 5120, 5122, 5124, 5126, 5128, 5130, 5132, 5133, 5134, 5136},
 }
 
 var alphabet = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "X", "Y", "Z"}
@@ -146,7 +169,7 @@ func (a *App) fillArray(data Data) {
 			// formatedDate, _ := time.Parse("2006-01-02T15:04:05", strings.Split(value.Date, " ")[0])
 			a.Dates = append(a.Dates, value.Date)
 		}
-	} else if a.ICG == int(icgs[2]) {
+	} else if a.ICG == int(icgs[2]) || a.ICG == int(icgs[11]) {
 		for _, value := range data.RealData {
 			a.Values = append(a.Values, value.IC02)
 			a.Values = append(a.Values, value.IC04)
@@ -163,7 +186,7 @@ func (a *App) fillArray(data Data) {
 			// }
 			a.Dates = append(a.Dates, value.Date)
 		}
-	} else if a.ICG == int(icgs[3]) || a.ICG == int(icgs[7]) {
+	} else if a.ICG == int(icgs[3]) || a.ICG == int(icgs[7]) || a.ICG == int(icgs[8]) {
 		for _, value := range data.RealData {
 			a.Values = append(a.Values, value.IC02)
 			a.Values = append(a.Values, value.IC04)
@@ -180,7 +203,7 @@ func (a *App) fillArray(data Data) {
 			// }
 			a.Dates = append(a.Dates, value.Date)
 		}
-	} else if a.ICG == int(icgs[4]) {
+	} else if a.ICG == int(icgs[4]) || a.ICG == int(icgs[9]) || a.ICG == int(icgs[10]) {
 		for _, value := range data.RealData {
 			a.Values = append(a.Values, value.IC02)
 			a.Values = append(a.Values, value.IC04)
@@ -212,15 +235,41 @@ func (a *App) fillArray(data Data) {
 
 			a.Dates = append(a.Dates, value.Date)
 		}
+	} else if a.ICG == int(icgs[12]) {
+		for _, value := range data.RealData {
+			a.Values = append(a.Values, value.IC02)
+			a.Values = append(a.Values, value.IC05)
+			a.Values = append(a.Values, value.IC06)
+			a.Values = append(a.Values, value.IC07)
+			a.Values = append(a.Values, value.IC08)
+			a.Values = append(a.Values, value.IC09)
+			a.Values = append(a.Values, value.IC10)
+			a.Values = append(a.Values, value.IC12)
+			a.Values = append(a.Values, value.IC14)
+			a.Values = append(a.Values, value.IC16)
+			a.Values = append(a.Values, value.IC18)
+			a.Values = append(a.Values, value.IC20)
+			a.Values = append(a.Values, value.IC22)
+			a.Values = append(a.Values, value.IC24)
+			a.Values = append(a.Values, value.IC26)
+			a.Values = append(a.Values, value.IC28)
+			a.Values = append(a.Values, value.IC30)
+			a.Values = append(a.Values, value.IC32)
+			a.Values = append(a.Values, value.IC33)
+			a.Values = append(a.Values, value.IC34)
+			a.Values = append(a.Values, value.IC36)
+
+			a.Dates = append(a.Dates, value.Date)
+		}
 	}
 }
 
 func NewApp(tsfrom int64, tsto int64, icg int, month int, daily bool, year int) *App {
 	var url = ""
-	if icg == 1373 || icg == 1364 || icg == 1355 || icg == 1421 || icg == 1435 {
-		url = "https://iot-api.aiwater.io/iot/data/samples/graph-series-daily/icg:"
-	} else {
+	if icg == 1346 {
 		url = "https://iot-api.aiwater.io/iot/data/samples/graph-series/icg:"
+	} else {
+		url = "https://iot-api.aiwater.io/iot/data/samples/graph-series-daily/icg:"
 	}
 	return &App{
 		BaseURL: url,
@@ -258,7 +307,9 @@ func getMonth() int {
 
 func getICG() (int, bool) {
 	var device int
-	fmt.Println("Select device [1-KTZLM: deminstanica, 2-RETTLH: kotolna turbiny, 3-GOTEC: reverzna osmoza, 4-SM62+RO-B1-3, 5-KTZLM: deminstanica tych vela, 6-VINCENTE, 7-GPV-rev. osmoza]")
+	fmt.Print("Select device [1-KTZLM: deminstanica, 2-RETTLH: kotolna turbiny, 3-GOTEC: reverzna osmoza,")
+	fmt.Print("4-SM62+RO-B1-3, 5-KTZLM: deminstanica tych vela, 6-VINCENTE, 7-GPV-rev. osmoza, ")
+	fmt.Print("8-TESGAL:RO podesta, 9-Dialyza Levice, 10-SEMI: RO1, 11-SEMI: RO2, 12-RONA: chladenie]\n")
 	_, err := fmt.Scanf("%d \n", &device)
 	if err != nil {
 		log.Panicf("error while getting value: %v", err)
@@ -338,7 +389,6 @@ func (a *App) getData(url string) Data {
 	if err != nil {
 		fmt.Printf("could not unmarshal data: %v", err)
 	}
-
 	return data
 }
 
@@ -382,6 +432,7 @@ func (a *App) writeExcel(data []float64) {
 	}
 
 	fileName := fmt.Sprintf("%s-%s.xlsx", devices[a.ICG], nameMonth[a.Month])
+	fmt.Print(fileName)
 	if err := f.SaveAs(fileName); err != nil {
 		log.Fatal(err)
 	}

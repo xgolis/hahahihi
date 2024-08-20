@@ -32,41 +32,41 @@ type Data struct {
 }
 
 type Values struct {
-	Date string  `json:"datef"`
-	IC01 float64 `json:"ic1,omitempty"`
-	IC02 float64 `json:"ic2,omitempty"`
-	IC03 float64 `json:"ic3,omitempty"`
-	IC04 float64 `json:"ic4,omitempty"`
-	IC05 float64 `json:"ic5,omitempty"`
-	IC06 float64 `json:"ic6,omitempty"`
-	IC07 float64 `json:"ic7,omitempty"`
-	IC08 float64 `json:"ic8,omitempty"`
-	IC09 float64 `json:"ic9,omitmepty"`
-	IC10 float64 `json:"ic10,omitempty"`
-	IC11 float64 `json:"ic11,omitempty"`
-	IC12 float64 `json:"ic12,omitempty"`
-	IC13 float64 `json:"ic13,omitempty"`
-	IC14 float64 `json:"ic14,omitempty"`
+  Date string  `json:"datef"`
+  IC01 float64 `json:"ic1,omitempty"`
+  IC02 float64 `json:"ic2,omitempty"`
+  IC03 float64 `json:"ic3,omitempty"`
+  IC04 float64 `json:"ic4,omitempty"`
+  IC05 float64 `json:"ic5,omitempty"`
+  IC06 float64 `json:"ic6,omitempty"`
+  IC07 float64 `json:"ic7,omitempty"`
+  IC08 float64 `json:"ic8,omitempty"`
+  IC09 float64 `json:"ic9,omitmepty"`
+  IC10 float64 `json:"ic10,omitempty"`
+  IC11 float64 `json:"ic11,omitempty"`
+  IC12 float64 `json:"ic12,omitempty"`
+  IC13 float64 `json:"ic13,omitempty"`
+  IC14 float64 `json:"ic14,omitempty"`
   IC15 float64 `json:"ic15,omitempty"`
   IC16 float64 `json:"ic16,omitempty"`
-	IC17 float64 `json:"ic17,omitempty"`
-	IC18 float64 `json:"ic18,omitempty"`
+  IC17 float64 `json:"ic17,omitempty"`
+  IC18 float64 `json:"ic18,omitempty"`
   IC19 float64 `json:"ic19,omitempty"`
   IC20 float64 `json:"ic20,omitempty"`
   IC21 float64 `json:"ic21,omitempty"`
   IC22 float64 `json:"ic22,omitempty"`
   IC23 float64 `json:"ic23,omitempty"`
   IC24 float64 `json:"ic24,omitempty"`
-	IC25 float64 `json:"ic25,omitempty"`
-	IC26 float64 `json:"ic26,omitempty"`
+  IC25 float64 `json:"ic25,omitempty"`
+  IC26 float64 `json:"ic26,omitempty"`
   IC27 float64 `json:"ic27,omitempty"`
-	IC28 float64 `json:"ic28,omitempty"`
+  IC28 float64 `json:"ic28,omitempty"`
   IC29 float64 `json:"ic29,omitempty"`
   IC30 float64 `json:"ic30,omitempty"`
-	IC32 float64 `json:"ic32,omitempty"`
-	IC33 float64 `json:"ic33,omitempty"`
-	IC34 float64 `json:"ic34,omitempty"`
-	IC36 float64 `json:"ic36,omitempty"`
+  IC32 float64 `json:"ic32,omitempty"`
+  IC33 float64 `json:"ic33,omitempty"`
+  IC34 float64 `json:"ic34,omitempty"`
+  IC36 float64 `json:"ic36,omitempty"`
 }
 
 var lastDay map[int]int = map[int]int{
@@ -113,6 +113,9 @@ var devices map[int]string = map[int]string{
 	1489: "SEMI-RO2",
 	1361: "RONA",
 	1475: "MORO",
+	1545: "ICSNR",
+	1091: "MORO3",
+	1396: "MORO4",
   1510: "TANAWA",
 }
 
@@ -130,7 +133,10 @@ var icgs map[int]int = map[int]int{
 	11: 1489,
 	12: 1361,
 	13: 1475,
-  14: 1510,
+	14: 1545,
+	15: 1091,
+	16: 1396,
+  17: 1510,
 }
 
 var excelInfocodes map[int][]int = map[int][]int{
@@ -146,6 +152,9 @@ var excelInfocodes map[int][]int = map[int][]int{
 	1489: {2102, 2104, 2106, 2108, 2110, 2112, 2114, 2116},
 	1475: {2102, 2104, 2106, 2108, 2110, 2112, 2114, 2116},
 	1361: {5102, 5105, 5106, 5107, 5108, 5109, 5110, 5112, 5114, 5116, 5118, 5120, 5122, 5124, 5126, 5128, 5130, 5132, 5133, 5134, 5136},
+	1545: {2102, 2104, 2106, 2108, 2110, 2112, 2114, 2116},
+	1091: {2102, 2104, 2106, 2108, 2110, 2112, 2114, 2116},
+	1396: {2102, 2104, 2106, 2108, 2110, 2112, 2114, 2116},
   1510: {4002, 4004, 4006, 4008, 4010, 4011, 4012, 4013, 4014, 4015, 4016, 4017, 4018, 4019, 4020, 4021, 4022, 4023, 4024, 4025, 4026, 4027, 4028, 4029, 4030},
 }
 
@@ -182,7 +191,7 @@ func (a *App) fillArray(data Data) {
 			// formatedDate, _ := time.Parse("2006-01-02T15:04:05", strings.Split(value.Date, " ")[0])
 			a.Dates = append(a.Dates, value.Date)
 		}
-	} else if a.ICG == int(icgs[2]) || a.ICG == int(icgs[11]) || a.ICG == int(icgs[13]) {
+	} else if a.ICG == int(icgs[2]) || a.ICG == int(icgs[11]) || a.ICG == int(icgs[13]) || a.ICG == int(icgs[14]) || a.ICG == int(icgs[15]) || a.ICG == int(icgs[16]) {
 		for _, value := range data.RealData {
 			a.Values = append(a.Values, value.IC02)
 			a.Values = append(a.Values, value.IC04)
@@ -216,40 +225,6 @@ func (a *App) fillArray(data Data) {
 			// }
 			a.Dates = append(a.Dates, value.Date)
 		}
-	} else if a.ICG == int(icgs[14]) {
-		for _, value := range data.RealData {
-			a.Values = append(a.Values, value.IC02)
-			a.Values = append(a.Values, value.IC04)
-			a.Values = append(a.Values, value.IC06)
-			a.Values = append(a.Values, value.IC08)
-			a.Values = append(a.Values, value.IC10)
-      a.Values = append(a.Values, value.IC11)
-      a.Values = append(a.Values, value.IC12)
-			a.Values = append(a.Values, value.IC13)
-			a.Values = append(a.Values, value.IC14)
-			a.Values = append(a.Values, value.IC15)
-      a.Values = append(a.Values, value.IC16)
-      a.Values = append(a.Values, value.IC17)
-			a.Values = append(a.Values, value.IC18)
-			a.Values = append(a.Values, value.IC19)
-			a.Values = append(a.Values, value.IC20)
-      a.Values = append(a.Values, value.IC21)
-      a.Values = append(a.Values, value.IC22)
-			a.Values = append(a.Values, value.IC23)
-			a.Values = append(a.Values, value.IC24)
-			a.Values = append(a.Values, value.IC25)
-      a.Values = append(a.Values, value.IC26)
-      a.Values = append(a.Values, value.IC27)
-			a.Values = append(a.Values, value.IC28)
-			a.Values = append(a.Values, value.IC29)
-			a.Values = append(a.Values, value.IC30)
-
-			// formatedDate, err := time.Parse("2006-01-02", strings.Split(value.Date, " ")[0])
-			// if err != nil {
-			// 	panic(err)
-			// }
-			a.Dates = append(a.Dates, value.Date)
-		}
 	} else if a.ICG == int(icgs[4]) || a.ICG == int(icgs[9]) || a.ICG == int(icgs[10]) {
 		for _, value := range data.RealData {
 			a.Values = append(a.Values, value.IC02)
@@ -267,6 +242,40 @@ func (a *App) fillArray(data Data) {
 			// }
 			a.Dates = append(a.Dates, value.Date)
 		}
+  } else if a.ICG == int(icgs[17]) {
+    for _, value := range data.RealData {
+      a.Values = append(a.Values, value.IC02)
+      a.Values = append(a.Values, value.IC04)
+      a.Values = append(a.Values, value.IC06)
+      a.Values = append(a.Values, value.IC08)
+      a.Values = append(a.Values, value.IC10)
+      a.Values = append(a.Values, value.IC11)
+      a.Values = append(a.Values, value.IC12)
+      a.Values = append(a.Values, value.IC13)
+      a.Values = append(a.Values, value.IC14)
+      a.Values = append(a.Values, value.IC15)
+      a.Values = append(a.Values, value.IC16)
+      a.Values = append(a.Values, value.IC17)
+      a.Values = append(a.Values, value.IC18)
+      a.Values = append(a.Values, value.IC19)
+      a.Values = append(a.Values, value.IC20)
+      a.Values = append(a.Values, value.IC21)
+      a.Values = append(a.Values, value.IC22)
+      a.Values = append(a.Values, value.IC23)
+      a.Values = append(a.Values, value.IC24)
+      a.Values = append(a.Values, value.IC25)
+      a.Values = append(a.Values, value.IC26)
+      a.Values = append(a.Values, value.IC27)
+      a.Values = append(a.Values, value.IC28)
+      a.Values = append(a.Values, value.IC29)
+      a.Values = append(a.Values, value.IC30)
+
+      // formatedDate, err := time.Parse("2006-01-02", strings.Split(value.Date, " ")[0])
+      // if err != nil {
+      //  panic(err)
+      // }
+      a.Dates = append(a.Dates, value.Date)
+    }
 	} else if a.ICG == int(icgs[6]) {
 		for _, value := range data.RealData {
 			a.Values = append(a.Values, value.IC01)
@@ -357,7 +366,7 @@ func getICG() (int, bool) {
 	fmt.Print("Select device [1-KTZLM: deminstanica, 2-RETTLH: kotolna turbiny, 3-GOTEC: reverzna osmoza,")
 	fmt.Print("4-SM62+RO-B1-3, 5-KTZLM: deminstanica tych vela, 6-VINCENTE, 7-GPV-rev. osmoza, ")
 	fmt.Print("8-TESGAL:RO podesta, 9-Dialyza Levice, 10-SEMI: RO1, 11-SEMI: RO2, 12-RONA: chladenie, ")
-	fmt.Print("13-MORO, 14-TANAWA]\n")
+	fmt.Print("13-MORO, 14 - ICSNR, 15-MORO3, 16-MORO4, 17-TANAWA]\n")
 	_, err := fmt.Scanf("%d \n", &device)
 	if err != nil {
 		log.Panicf("error while getting value: %v", err)
@@ -499,3 +508,4 @@ func main() {
 	app.fillArray(data)
 	app.writeExcel(app.Values)
 }
+

@@ -117,6 +117,7 @@ var devices map[int]string = map[int]string{
 	1091: "MORO3",
 	1396: "MORO4",
   1510: "TANAWA",
+  1408: "AEROSOL",
 }
 
 var icgs map[int]int = map[int]int{
@@ -137,6 +138,7 @@ var icgs map[int]int = map[int]int{
 	15: 1091,
 	16: 1396,
   17: 1510,
+  18: 1408,
 }
 
 var excelInfocodes map[int][]int = map[int][]int{
@@ -156,9 +158,10 @@ var excelInfocodes map[int][]int = map[int][]int{
 	1091: {2102, 2104, 2106, 2108, 2110, 2112, 2114, 2116},
 	1396: {2102, 2104, 2106, 2108, 2110, 2112, 2114, 2116},
   1510: {4102, 4104, 4106, 4108, 4110, 4111, 4112, 4113, 4114, 4115, 4116, 4117, 4118, 4119, 4120, 4121, 4122, 4123, 4124, 4125, 4126, 4127, 4128, 4129, 4130},
+  1408: {8102, 8104, 8106, 8108, 8110, 8111, 8112, 8113, 8114, 8115, 8116, 8117, 8118, 8119, 8120, 8121, 8122, 8123, 8124, 8125, 8126, 8127},
 }
 
-var alphabet = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE"}
+var alphabet = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH"}
 
 func (a *App) getUrl(tsfrom, tsto int64) string {
 	fmt.Println(fmt.Sprintf("%s%d?tsfrom=%d&tsto=%d", a.BaseURL, a.ICG, tsfrom, tsto))
@@ -242,6 +245,33 @@ func (a *App) fillArray(data Data) {
 			// }
 			a.Dates = append(a.Dates, value.Date)
 		}
+  } else if a.ICG == int(icgs[18]) {
+    for _, value := range data.RealData {
+      a.Values = append(a.Values, value.IC02)
+      a.Values = append(a.Values, value.IC04)
+      a.Values = append(a.Values, value.IC06)
+      a.Values = append(a.Values, value.IC08)
+      a.Values = append(a.Values, value.IC10)
+      a.Values = append(a.Values, value.IC11)
+      a.Values = append(a.Values, value.IC12)
+      a.Values = append(a.Values, value.IC13)
+      a.Values = append(a.Values, value.IC14)
+      a.Values = append(a.Values, value.IC15)
+      a.Values = append(a.Values, value.IC16)
+      a.Values = append(a.Values, value.IC17)
+      a.Values = append(a.Values, value.IC18)
+      a.Values = append(a.Values, value.IC19)
+      a.Values = append(a.Values, value.IC20)
+      a.Values = append(a.Values, value.IC21)
+      a.Values = append(a.Values, value.IC22)
+      a.Values = append(a.Values, value.IC23)
+      a.Values = append(a.Values, value.IC24)
+      a.Values = append(a.Values, value.IC25)
+      a.Values = append(a.Values, value.IC26)
+      a.Values = append(a.Values, value.IC27)
+
+      a.Dates = append(a.Dates, value.Date)
+    }
   } else if a.ICG == int(icgs[17]) {
     for _, value := range data.RealData {
       a.Values = append(a.Values, value.IC02)
@@ -366,7 +396,7 @@ func getICG() (int, bool) {
 	fmt.Print("Select device [1-KTZLM: deminstanica, 2-RETTLH: kotolna turbiny, 3-GOTEC: reverzna osmoza,")
 	fmt.Print("4-SM62+RO-B1-3, 5-KTZLM: deminstanica tych vela, 6-VINCENTE, 7-GPV-rev. osmoza, ")
 	fmt.Print("8-TESGAL:RO podesta, 9-Dialyza Levice, 10-SEMI: RO1, 11-SEMI: RO2, 12-RONA: chladenie, ")
-	fmt.Print("13-MORO, 14 - ICSNR, 15-MORO3, 16-MORO4, 17-TANAWA]\n")
+	fmt.Print("13-MORO, 14 - ICSNR, 15-MORO3, 16-MORO4, 17-TANAWA, 18-AEROSOL]\n")
 	_, err := fmt.Scanf("%d \n", &device)
 	if err != nil {
 		log.Panicf("error while getting value: %v", err)
@@ -496,6 +526,7 @@ func (a *App) writeExcel(data []float64) {
 }
 
 func main() {
+  fmt.Println("Lucia je najkrajšia na svete")
 	// daily := true
 	year := getYear()
 	month := getMonth()

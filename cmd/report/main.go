@@ -118,6 +118,8 @@ var devices map[int]string = map[int]string{
 	1396: "MORO4",
   1510: "TANAWA",
   1408: "AEROSOL",
+  1556: "TERMINAL-R1",
+  1516: "BUCANY",
 }
 
 var icgs map[int]int = map[int]int{
@@ -139,6 +141,8 @@ var icgs map[int]int = map[int]int{
 	16: 1396,
   17: 1510,
   18: 1408,
+  19: 1556,
+  20: 1516,
 }
 
 var excelInfocodes map[int][]int = map[int][]int{
@@ -159,6 +163,8 @@ var excelInfocodes map[int][]int = map[int][]int{
 	1396: {2102, 2104, 2106, 2108, 2110, 2112, 2114, 2116},
   1510: {4102, 4104, 4106, 4108, 4110, 4111, 4112, 4113, 4114, 4115, 4116, 4117, 4118, 4119, 4120, 4121, 4122, 4123, 4124, 4125, 4126, 4127, 4128, 4129, 4130},
   1408: {8102, 8104, 8106, 8108, 8110, 8111, 8112, 8113, 8114, 8115, 8116, 8117, 8118, 8119, 8120, 8121, 8122, 8123, 8124, 8125, 8126, 8127},
+  1556: {3102, 3104, 3106, 3108, 3110, 3111, 3112, 3114, 3116, 3118, 3119, 3120, 3121, 3122, 3123, 3124, 3126, 3127, 3128, 3130},
+  1516: {4102, 4104, 4106, 4108, 4110, 4111, 4112, 4114, 4116, 4118, 4119, 4120, 4121, 4122, 4123, 4124, 4126, 4127, 4130},
 }
 
 var alphabet = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "X", "Y", "Z", "AA", "AB", "AC", "AD", "AE", "AF", "AG", "AH"}
@@ -321,6 +327,57 @@ func (a *App) fillArray(data Data) {
 
 			a.Dates = append(a.Dates, value.Date)
 		}
+	} else if a.ICG == int(icgs[19]) {
+		for _, value := range data.RealData {
+			a.Values = append(a.Values, value.IC02)
+			a.Values = append(a.Values, value.IC04)
+			a.Values = append(a.Values, value.IC06)
+			a.Values = append(a.Values, value.IC08)
+			a.Values = append(a.Values, value.IC10)
+			a.Values = append(a.Values, value.IC11)
+			a.Values = append(a.Values, value.IC12)
+			a.Values = append(a.Values, value.IC14)
+			a.Values = append(a.Values, value.IC16)
+			a.Values = append(a.Values, value.IC18)
+			a.Values = append(a.Values, value.IC19)
+			a.Values = append(a.Values, value.IC20)
+			a.Values = append(a.Values, value.IC21)
+			a.Values = append(a.Values, value.IC22)
+			a.Values = append(a.Values, value.IC22)
+			a.Values = append(a.Values, value.IC23)
+			a.Values = append(a.Values, value.IC24)
+			a.Values = append(a.Values, value.IC26)
+			a.Values = append(a.Values, value.IC27)
+			a.Values = append(a.Values, value.IC28)
+			a.Values = append(a.Values, value.IC30)
+
+			a.Dates = append(a.Dates, value.Date)
+		}
+	} else if a.ICG == int(icgs[20]) {
+		for _, value := range data.RealData {
+			a.Values = append(a.Values, value.IC02)
+			a.Values = append(a.Values, value.IC04)
+			a.Values = append(a.Values, value.IC06)
+			a.Values = append(a.Values, value.IC08)
+			a.Values = append(a.Values, value.IC10)
+			a.Values = append(a.Values, value.IC11)
+			a.Values = append(a.Values, value.IC12)
+			a.Values = append(a.Values, value.IC14)
+			a.Values = append(a.Values, value.IC16)
+			a.Values = append(a.Values, value.IC18)
+			a.Values = append(a.Values, value.IC19)
+			a.Values = append(a.Values, value.IC20)
+			a.Values = append(a.Values, value.IC21)
+			a.Values = append(a.Values, value.IC22)
+			a.Values = append(a.Values, value.IC22)
+			a.Values = append(a.Values, value.IC23)
+			a.Values = append(a.Values, value.IC24)
+			a.Values = append(a.Values, value.IC26)
+			a.Values = append(a.Values, value.IC27)
+			a.Values = append(a.Values, value.IC30)
+
+			a.Dates = append(a.Dates, value.Date)
+		}
 	} else if a.ICG == int(icgs[12]) {
 		for _, value := range data.RealData {
 			a.Values = append(a.Values, value.IC02)
@@ -396,7 +453,7 @@ func getICG() (int, bool) {
 	fmt.Print("Select device [1-KTZLM: deminstanica, 2-RETTLH: kotolna turbiny, 3-GOTEC: reverzna osmoza,")
 	fmt.Print("4-SM62+RO-B1-3, 5-KTZLM: deminstanica tych vela, 6-VINCENTE, 7-GPV-rev. osmoza, ")
 	fmt.Print("8-TESGAL:RO podesta, 9-Dialyza Levice, 10-SEMI: RO1, 11-SEMI: RO2, 12-RONA: chladenie, ")
-	fmt.Print("13-MORO, 14 - ICSNR, 15-MORO3, 16-MORO4, 17-TANAWA, 18-AEROSOL]\n")
+	fmt.Print("13-MORO, 14 - ICSNR, 15-MORO3, 16-MORO4, 17-TANAWA, 19-AEROSOL, 19-TERMINAL-R1, 20-BUCANY]\n")
 	_, err := fmt.Scanf("%d \n", &device)
 	if err != nil {
 		log.Panicf("error while getting value: %v", err)
